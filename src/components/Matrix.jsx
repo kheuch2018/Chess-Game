@@ -1,7 +1,13 @@
 import React from "react";
 import Row from "./Row";
 import { PIECES } from "../pieces";
-import { kingMoves, queenMoves, bishopMove } from "../moves";
+import {
+  kingMoves,
+  queenMoves,
+  bishopMoves,
+  knightMoves,
+  rookMoves
+} from "../moves";
 
 const initMatrix = () => {
   let matrix = Array(8)
@@ -32,13 +38,16 @@ const initMatrix = () => {
 const Matrix = () => {
   const [matrix, setMatrix] = React.useState(initMatrix());
 
-  const [on, setOn] = React.useState(null);
+  const [on, setOn] = React.useState({});
 
-  const hightLight = (pos) => {
-    if (on !== null && JSON.stringify(pos) === JSON.stringify(on)) {
-      setOn(null);
+  const hightLight = (obj) => {
+    if (
+      on !== null &&
+      JSON.stringify(obj.coordinates) === JSON.stringify(on.coordinates)
+    ) {
+      setOn({});
     } else {
-      setOn(pos);
+      setOn(obj);
     }
   };
 
@@ -51,12 +60,15 @@ const Matrix = () => {
     }
   };
 
-  const highlightSquare = (pos) => {
+  const highlightSquare = (obj) => {
     cleanHighlights();
-    if (pos) {
+    if (obj.coordinates && obj.piece) {
       const cp = [...matrix];
-      cp[pos[0]][pos[1]].isClicked = true;
-      let moves = queenMoves(pos);
+      cp[obj.coordinates[0]][obj.coordinates[1]].isClicked = true;
+      let moves = PIECES[obj.piece].moves(
+        obj.coordinates,
+        PIECES[obj.piece].camp
+      );
       for (let i = 0; i < moves.length; i++) {
         let line = moves[i][0];
         let col = moves[i][1];
